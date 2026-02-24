@@ -1,14 +1,16 @@
 import React from 'react'
-import { BrowserRouter, createBrowserRouter, createRoutesFromElements, Route, RouterProvider, Routes } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import LoginLayout from "./Pages/LoginLayout"
 import MainPage from './Pages/MainPage'
+import LandingPage from './Pages/LandingPage'
 
 const App = () => {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>
-      <Route path='/' element={<LoginLayout/>}/>
+      <Route index element={<LandingPage/>}/>
+      <Route path='/login' element={<LoginLayout/>}/>
       <Route path='/Mainpage' element={<MainPage/>}/>
       </>
     )
@@ -16,6 +18,7 @@ const App = () => {
   )
   return (
    <RouterProvider router={router}/>
+
   )
 }
 
