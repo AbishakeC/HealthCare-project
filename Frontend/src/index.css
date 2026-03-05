@@ -3,5 +3,26 @@
 @tailwind utilities;
 
 body{
-    @apply bg-black max-w-6xl w-auto h-auto text-white 
+    @apply bg-black w-full  h-auto text-white 
+}
+
+label{
+    @apply text-lg p-2 -ml-2
+    
+}
+
+input{
+    @apply bg-gray-800 p-2 w-[50vh] rounded-lg text-white
+}
+
+.card{
+@apply bg-white/35 border backdrop-blur-sm text-gray-900 text-5xl h-52 scale-90 p-4 m-4 rounded-lg hover:scale-105 hover:bg-transparent flex justify-center items-center duration-200;
+}
+
+.input{
+@apply w-full p-2 rounded text-white;
+}
+
+.btn{
+@apply bg-white text-black p-3 mt-4 rounded-lg;
 }
