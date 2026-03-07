@@ -11,18 +11,16 @@ def conn_db():
     db = sessionlocal()
     try:
         yield db
-    
-    except:
+    finally:
         db.close()
-
 
 @router.get("/hostory")
 def get_history(
     user_id :int = Depends(get_current_user),
     db:Session = Depends(conn_db)
 ):
-    data = model.History.query(model.History).filter(
-        model.History.User_id == user_id
-    ).all()
+    data = db.query(model.History).filter(
+    model.History.User_id == user_id
+).all()
     
     return data

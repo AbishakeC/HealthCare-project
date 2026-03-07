@@ -1,6 +1,7 @@
 from fastapi import APIRouter,Depends,HTTPException
 from sqlalchemy.orm import Session
 from jose import jwt
+from ..Models.model import UserCreate
 
 
 from ..Configs.database import sessionlocal
@@ -12,29 +13,30 @@ from ..Middleware.token import create_access_token
 router = APIRouter()
 
 def get_db():
-    db = sessionlocal
+    db = sessionlocal()
     try:
         yield db
-    except:
-        db.close_all()    
+    finally:
+        db.close()  
 
 @router.post("/Signup")
-def signup(username:str,email:str,password:str,db:Session = Depends(get_db)):
+def signup(user:UserCreate,db:Session = Depends(get_db)):
 
-    user = model.User(
-        username=username,
-        email = email,
-        password = hashedpassword(password)
+    new_user = model.User(
+        username=user.username,
+        email = user.email,
+        password_hashed = hashedpassword(user.password)
     )
 
-    db.add(user)
+    db.add(new_user)
     db.commit()
+    db.refresh(new_user)
 
     return {"message":"user created with hashed password"}
 
 
 
-@router.get("/Login")
+@router.post("/Login")
 def login(email:str,password:str,db:Session=Depends(get_db)):
     user = db.query(model.User).filter(
         model.User.email == email
@@ -48,7 +50,7 @@ def login(email:str,password:str,db:Session=Depends(get_db)):
     
 
     token = create_access_token(
-        {"user.id":user.id}
+        {"user_id":user.id}
     )
 
     return {

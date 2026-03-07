@@ -9,5 +9,5 @@ def hashedpassword(password:str):
       return pwd_content.hash(password)
 
 
-def verifypassword(plain,hashedpassword):
-     return pwd_content.verify(plain,hashedpassword)
+def verifypassword(plain_password, hashed_password):
+    return pwd_content.verify(plain_password, hashed_password)
