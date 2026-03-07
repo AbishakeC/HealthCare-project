@@ -4,6 +4,11 @@ from ..Configs.database import Base
 
 from pydantic import BaseModel
 
+
+class UserLogin(BaseModel):
+    email:str
+    password:str
+
 class UserCreate(BaseModel):
     username: str
     email: str
