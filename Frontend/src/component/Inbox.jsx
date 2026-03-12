@@ -1,43 +1,60 @@
-// import React from 'react'
+import React, { useState } from "react"
+import { searchDrug, searchIllness, analyseSymptoms, generateDiet } from "../api/medicalAPI"
 
-// const Inbox = ({domain = "Drug"}) => {
-//   return (
-//     <div className='w-[80vh] h-full scale-90  bg-gray-900/45 rounded-lg m-2 p-4 '>
-//        {domain =="Drug" &&
-//        <div> 
-//         <h1>Title</h1>
-//         <form>
-//             <div>
-//                 <label>Medicine Name:</label>
-//                 <input type="text"/>
-//             </div>
+const Inbox = ({ domain }) => {
 
-//             <div>
-//                 <label>Dosage or Quantity:</label>
-//                 <input type="text"/>
-//             </div>
+  const [formData, setFormData] = useState({
+    name:"",
+    dosage:"",
+    symptoms:"",
+    goal:""
+  })
 
-//             <div>
-//                 <label>Specifies use case:</label>
-//                 <label className='text-xs'>Optional</label>
-//                 <input type="text"/>
-//             </div>
+  const handleChange = (e)=>{
+    setFormData({
+      ...formData,
+      [e.target.name]:e.target.value
+    })
+  }
 
-//             <button className='text-gray-950 text-xl bg-white/25 p-4 rounded-lg'>Search</button>
-//         </form>
-//         </div>
-//  }
-//         inbox
-//     </div>
-//   )
-// }
+  const handleSubmit = async(e)=>{
+    e.preventDefault()
 
-// export default Inbox
+    try{
 
+      let res
 
-import React from 'react'
+      if(domain === "Drug"){
+        res = await searchDrug({
+          medicine: formData.name,
+          dosage: formData.dosage
+        })
+      }
 
-const Inbox = ({domain}) => {
+      if(domain === "Illness"){
+        res = await searchIllness({
+          illness: formData.name
+        })
+      }
+
+      if(domain === "Symptoms"){
+        res = await analyseSymptoms({
+          symptoms: formData.symptoms
+        })
+      }
+
+      if(domain === "Diet"){
+        res = await generateDiet({
+          goal: formData.goal
+        })
+      }
+
+      console.log("Backend Response:",res.data)
+
+    }catch(err){
+      console.log(err)
+    }
+  }
 
   return (
     <div className='w-[80vh] scale-90 bg-gray-900/45 rounded-lg m-2 p-4 text-white'>
@@ -45,17 +62,23 @@ const Inbox = ({domain}) => {
       <h1 className='text-3xl mb-6'>{domain} Search</h1>
 
       {domain === "Drug" && (
-        <form>
+        <form onSubmit={handleSubmit}>
 
-          <div>
-            <label>Medicine Name</label>
-            <input type="text" className='input'/>
-          </div>
+          <label>Medicine Name</label>
+          <input
+            type="text"
+            name="name"
+            onChange={handleChange}
+            className='input'
+          />
 
-          <div>
-            <label>Dosage</label>
-            <input type="text" className='input'/>
-          </div>
+          <label>Dosage</label>
+          <input
+            type="text"
+            name="dosage"
+            onChange={handleChange}
+            className='input'
+          />
 
           <button className='btn'>Search</button>
 
@@ -63,10 +86,15 @@ const Inbox = ({domain}) => {
       )}
 
       {domain === "Illness" && (
-        <form>
+        <form onSubmit={handleSubmit}>
 
           <label>Illness Name</label>
-          <input type="text" className='input'/>
+          <input
+            type="text"
+            name="name"
+            onChange={handleChange}
+            className='input'
+          />
 
           <button className='btn'>Search</button>
 
@@ -74,10 +102,15 @@ const Inbox = ({domain}) => {
       )}
 
       {domain === "Symptoms" && (
-        <form>
+        <form onSubmit={handleSubmit}>
 
           <label>Symptoms</label>
-          <input type="text" className='input'/>
+          <input
+            type="text"
+            name="symptoms"
+            onChange={handleChange}
+            className='input'
+          />
 
           <button className='btn'>Analyse</button>
 
@@ -85,10 +118,15 @@ const Inbox = ({domain}) => {
       )}
 
       {domain === "Diet" && (
-        <form>
+        <form onSubmit={handleSubmit}>
 
           <label>Health Goal</label>
-          <input type="text" className='input'/>
+          <input
+            type="text"
+            name="goal"
+            onChange={handleChange}
+            className='input'
+          />
 
           <button className='btn'>Generate Plan</button>
 

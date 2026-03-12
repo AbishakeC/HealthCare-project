@@ -14,7 +14,7 @@ def conn_db():
     finally:
         db.close()
 
-@router.get("/hostory")
+@router.get("/history")
 def get_history(
     user_id :int = Depends(get_current_user),
     db:Session = Depends(conn_db)

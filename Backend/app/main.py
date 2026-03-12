@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .Routers import auth_Signup,route_history
+from .Routers import auth_Signup,route_history,med_info
 from .Configs.database import engine
 from .Models import model
 
@@ -29,3 +29,4 @@ def home():
 
 app.include_router(auth_Signup.router)
 app.include_router(route_history.router)
+app.include_router(med_info.router,prefix="/Sub")

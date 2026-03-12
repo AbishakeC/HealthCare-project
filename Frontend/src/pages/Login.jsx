@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import API from "../api/api";
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
 
@@ -12,6 +13,8 @@ const [confirmPassword,setConfirmPassword] = useState("")
 
 
 /* ---------------- LOGIN ---------------- */
+
+const navi = useNavigate();
 
 const handleLogin = async(e)=>{
 e.preventDefault()
@@ -28,6 +31,7 @@ localStorage.setItem("token",res.data.access_token)
 console.log(res.data)
 
 alert("Login successful")
+navi("/Mainpage")
 
 }catch(err){
 
@@ -60,6 +64,7 @@ password:password
 console.log(res.data)
 
 alert("Registered successfully")
+
 
 setSignup(false)
 
