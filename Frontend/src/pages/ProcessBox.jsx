@@ -1,35 +1,49 @@
-import React, { useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import OutletBox from '../component/OutletBox'
-import Inbox from '../component/Inbox'
-import Navbar from '../component/Navbar'
+import { useState } from "react"
+import { useLocation } from "react-router-dom"
+
+import OutletBox from "../component/OutletBox"
+import Inbox from "../component/Inbox"
+import Navbar from "../component/Navbar"
 
 const ProcessBox = () => {
 
   const location = useLocation()
+
   const domain = location.state?.domain || "Drug"
 
   const [responseData, setResponseData] = useState(null)
 
   return (
-    <div className='bg-[url("../src/assets/Rosegel.jpg")] bg-cover w-full min-h-screen pb-9'>
 
-      <Navbar/>
+    <div className='relative bg-[url("../src/assets/Rosegel.jpg")] bg-cover w-full min-h-screen'>
 
-      <div className='flex flex-row'>
+      <Navbar />
 
-        <Inbox 
-          domain={domain}
-          setResponseData={setResponseData}
-        />
+      <div className='relative w-full h-[90vh] flex items-center justify-center p-6'>
 
-        <OutletBox 
-          data={responseData}
-        />
+        {/* RESULT BOX */}
+
+        <div className='w-[100%] h-full'>
+
+          <OutletBox data={responseData} />
+
+        </div>
+
+        {/* FLOATING FORM */}
+
+        <div className='absolute right-10 bottom-10 w-[360px]'>
+
+          <Inbox
+            domain={domain}
+            setResponseData={setResponseData}
+          />
+
+        </div>
 
       </div>
 
     </div>
+
   )
 }
 

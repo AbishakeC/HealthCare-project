@@ -1,139 +1,80 @@
 import React, { useState } from "react"
-import { searchDrug, searchIllness, analyseSymptoms, generateDiet } from "../api/medicalAPI"
 
-const Inbox = ({ domain }) => {
+const Inbox = ({ domain, setResponseData }) => {
 
-  const [formData, setFormData] = useState({
-    name:"",
-    dosage:"",
-    symptoms:"",
-    goal:""
-  })
+  const [input, setInput] = useState("")
 
-  const handleChange = (e)=>{
-    setFormData({
-      ...formData,
-      [e.target.name]:e.target.value
-    })
-  }
+  const handleSubmit = async (e) => {
 
-  const handleSubmit = async(e)=>{
     e.preventDefault()
 
-    try{
+    try {
 
-      let res
+      let endpoint = ""
 
-      if(domain === "Drug"){
-        res = await searchDrug({
-          medicine: formData.name,
-          dosage: formData.dosage
+      if (domain === "Drug") endpoint = "/Sub/drug"
+      else if (domain === "Illness") endpoint = "/Sub/illness"
+      else if (domain === "Symptoms") endpoint = "/Sub/symptoms"
+      else if (domain === "Diet") endpoint = "/Sub/diet"
+
+      const res = await fetch(`http://127.0.0.1:8000${endpoint}`, {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          query: input
         })
-      }
 
-      if(domain === "Illness"){
-        res = await searchIllness({
-          illness: formData.name
-        })
-      }
+      })
 
-      if(domain === "Symptoms"){
-        res = await analyseSymptoms({
-          symptoms: formData.symptoms
-        })
-      }
+      const data = await res.json()
 
-      if(domain === "Diet"){
-        res = await generateDiet({
-          goal: formData.goal
-        })
-      }
+      setResponseData(data)
 
-      console.log("Backend Response:",res.data)
+    } catch (err) {
 
-    }catch(err){
-      console.log(err)
+      console.error("API Error:", err)
+
     }
+
   }
 
   return (
-    <div className='w-[80vh] scale-90 bg-gray-900/45 rounded-lg m-2 p-4 text-white'>
 
-      <h1 className='text-3xl mb-6'>{domain} Search</h1>
+    <div className="w-full rounded-2xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg p-6 text-white">
 
-      {domain === "Drug" && (
-        <form onSubmit={handleSubmit}>
+      <h1 className="text-2xl font-semibold mb-4">
+        {domain} Search
+      </h1>
 
-          <label>Medicine Name</label>
-          <input
-            type="text"
-            name="name"
-            onChange={handleChange}
-            className='input'
-          />
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-4"
+      >
 
-          <label>Dosage</label>
-          <input
-            type="text"
-            name="dosage"
-            onChange={handleChange}
-            className='input'
-          />
+        <input
+          type="text"
+          placeholder={`Enter ${domain} query`}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          required
+          className="p-3 rounded-lg bg-white/10 border border-white/20"
+        />
 
-          <button className='btn'>Search</button>
+        <button className="bg-green-500 hover:bg-green-600 p-3 rounded-lg">
 
-        </form>
-      )}
+          Submit
 
-      {domain === "Illness" && (
-        <form onSubmit={handleSubmit}>
+        </button>
 
-          <label>Illness Name</label>
-          <input
-            type="text"
-            name="name"
-            onChange={handleChange}
-            className='input'
-          />
-
-          <button className='btn'>Search</button>
-
-        </form>
-      )}
-
-      {domain === "Symptoms" && (
-        <form onSubmit={handleSubmit}>
-
-          <label>Symptoms</label>
-          <input
-            type="text"
-            name="symptoms"
-            onChange={handleChange}
-            className='input'
-          />
-
-          <button className='btn'>Analyse</button>
-
-        </form>
-      )}
-
-      {domain === "Diet" && (
-        <form onSubmit={handleSubmit}>
-
-          <label>Health Goal</label>
-          <input
-            type="text"
-            name="goal"
-            onChange={handleChange}
-            className='input'
-          />
-
-          <button className='btn'>Generate Plan</button>
-
-        </form>
-      )}
+      </form>
 
     </div>
+
   )
 }
 

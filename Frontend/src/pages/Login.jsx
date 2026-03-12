@@ -21,7 +21,7 @@ e.preventDefault()
 
 try{
 
-const res = await API.post("/Login",{
+const res = await API.post("/auth/Login",{
 email:email,
 password:password
 })
@@ -55,7 +55,7 @@ if(password !== confirmPassword){
 
 try{
 
-const res = await API.post("/Signup",{
+const res = await API.post("/auth/Signup",{
 username:username,
 email:email,
 password:password
