@@ -1,69 +1,101 @@
-from fastapi import APIRouter
-from ..Configs.GenAI_API import illness_info, analyse_symptoms, generate_diet, explain_drug
-from ..Configs.openFDA_API import  get_medical_info
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from ..Configs.database import get_db
+from ..Models.model import History, QueryRequest, User
+from ..Middleware.token import get_current_user
+
+from ..Controller.Gemin_feedback import (
+    illness_info,
+    analyse_symptoms,
+    generate_diet
+)
 
 router = APIRouter()
 
-@router.post("/drug")
-async def drug_info(data: dict):
 
-    medicine = data.get("medicine")
-    dosage = data.get("dosage")
-
-    drug = get_medical_info(medicine)
-
-    if not drug or "usage" not in drug:
-        return {
-            "title": medicine,
-            "description": "Drug information",
-            "details": "Drug not found in OpenFDA database",
-            "reference": "OpenFDA"
-        }
-
-    return {
-        "title": medicine,
-        "description": f"Dosage information for {medicine}",
-        "details": drug.get("usage", "No usage info") if drug else "Drug not found",
-        "reference": "OpenFDA Database"
-    }
-
+# -----------------------------
+# Illness Information
+# -----------------------------
 @router.post("/illness")
-async def illness(data: dict):
+def illness(
+    data: QueryRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
 
-    illness = data.get("illness")
+    result = illness_info(data.query)
 
-    result = illness_info(illness)
+    history = History(
+        user_id=current_user.id,
+        domain="Illness",
+        query=data.query,
+        result=result
+    )
+
+    db.add(history)
+    db.commit()
 
     return {
-        "title": illness,
-        "description": "Illness information",
+        "title": data.query,
+        "description": "Illness Information",
         "details": result
     }
 
 
+# -----------------------------
+# Symptom Analysis
+# -----------------------------
 @router.post("/symptoms")
-async def symptoms(data: dict):
+def symptoms(
+    data: QueryRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
 
-    sym = data.get("symptoms")
+    result = analyse_symptoms(data.query)
 
-    result = analyse_symptoms(sym)
+    history = History(
+        user_id=current_user.id,
+        domain="Symptoms",
+        query=data.query,
+        result=result
+    )
+
+    db.add(history)
+    db.commit()
 
     return {
         "title": "Symptom Analysis",
-        "description": sym,
+        "description": data.query,
         "details": result
     }
 
 
+# -----------------------------
+# Diet Plan
+# -----------------------------
 @router.post("/diet")
-async def diet(data: dict):
+def diet(
+    data: QueryRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
 
-    goal = data.get("goal")
+    result = generate_diet(data.query)
 
-    result = generate_diet(goal)
+    history = History(
+        user_id=current_user.id,
+        domain="Diet",
+        query=data.query,
+        result=result
+    )
+
+    db.add(history)
+    db.commit()
 
     return {
         "title": "Diet Plan",
-        "description": goal,
+        "description": data.query,
         "details": result
     }

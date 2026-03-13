@@ -9,27 +9,27 @@ const ProcessBox = () => {
 
   const location = useLocation()
 
-  const domain = location.state?.domain || "Drug"
+  const domain = location?.state?.domain || "Drug"
 
   const [responseData, setResponseData] = useState(null)
 
   return (
 
-    <div className='relative bg-[url("../src/assets/Rosegel.jpg")] bg-cover w-full min-h-screen'>
+    <div className='relative bg-[url("../src/assets/Rosegel.jpg")] bg-cover bg-center w-full min-h-screen'>
 
       <Navbar />
 
-      <div className='relative w-full h-[90vh] flex items-center justify-center p-6'>
+      <div className='relative w-full min-h-[90vh] flex items-center justify-center p-6'>
 
-        {/* RESULT BOX */}
+        {/* RESULT DISPLAY */}
 
-        <div className='w-[100%] h-full'>
+        <div className='w-full max-w-5xl'>
 
           <OutletBox data={responseData} />
 
         </div>
 
-        {/* FLOATING FORM */}
+        {/* FLOATING INPUT BOX */}
 
         <div className='absolute right-10 bottom-10 w-[360px]'>
 

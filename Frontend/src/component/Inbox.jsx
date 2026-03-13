@@ -1,5 +1,12 @@
 import React, { useState } from "react"
 
+import {
+  searchDrug,
+  searchIllness,
+  analyseSymptoms,
+  generateDiet
+} from "../api/MedicalAPI"
+
 const Inbox = ({ domain, setResponseData }) => {
 
   const [input, setInput] = useState("")
@@ -10,30 +17,26 @@ const Inbox = ({ domain, setResponseData }) => {
 
     try {
 
-      let endpoint = ""
+      const payload = {
+        user_id: 1,
+        query: input
+      }
 
-      if (domain === "Drug") endpoint = "/Sub/drug"
-      else if (domain === "Illness") endpoint = "/Sub/illness"
-      else if (domain === "Symptoms") endpoint = "/Sub/symptoms"
-      else if (domain === "Diet") endpoint = "/Sub/diet"
+      let response
 
-      const res = await fetch(`http://127.0.0.1:8000${endpoint}`, {
+      if (domain === "Drug")
+        response = await searchDrug(payload)
 
-        method: "POST",
+      else if (domain === "Illness")
+        response = await searchIllness(payload)
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+      else if (domain === "Symptoms")
+        response = await analyseSymptoms(payload)
 
-        body: JSON.stringify({
-          query: input
-        })
+      else if (domain === "Diet")
+        response = await generateDiet(payload)
 
-      })
-
-      const data = await res.json()
-
-      setResponseData(data)
+      setResponseData(response.data)
 
     } catch (err) {
 
