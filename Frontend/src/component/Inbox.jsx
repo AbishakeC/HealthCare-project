@@ -7,7 +7,7 @@ import {
   generateDiet
 } from "../api/MedicalAPI"
 
-const Inbox = ({ domain, setResponseData }) => {
+const Inbox = ({ domain, setMessages }) => {
 
   const [input, setInput] = useState("")
 
@@ -15,11 +15,23 @@ const Inbox = ({ domain, setResponseData }) => {
 
     e.preventDefault()
 
+    if (!input.trim()) return
+
+    const userMessage = input
+
+    // Add user message
+    setMessages(prev => [
+      ...prev,
+      { sender: "user", text: userMessage }
+    ])
+
+    setInput("")
+
     try {
 
       const payload = {
         user_id: 1,
-        query: input
+        query: userMessage
       }
 
       let response
@@ -36,11 +48,25 @@ const Inbox = ({ domain, setResponseData }) => {
       else if (domain === "Diet")
         response = await generateDiet(payload)
 
-      setResponseData(response.data)
+      const botReply =
+        response.data.details ||
+        response.data.description ||
+        "No response"
+
+      // Add bot message
+      setMessages(prev => [
+        ...prev,
+        { sender: "bot", text: botReply }
+      ])
 
     } catch (err) {
 
       console.error("API Error:", err)
+
+      setMessages(prev => [
+        ...prev,
+        { sender: "bot", text: "Something went wrong 😢" }
+      ])
 
     }
 
@@ -48,35 +74,24 @@ const Inbox = ({ domain, setResponseData }) => {
 
   return (
 
-    <div className="w-full rounded-2xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-lg p-6 text-white">
+    <form
+      onSubmit={handleSubmit}
+      className="flex gap-3"
+    >
 
-      <h1 className="text-2xl font-semibold mb-4">
-        {domain} Search
-      </h1>
+      <input
+        type="text"
+        placeholder={`Ask about ${domain}...`}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        className="flex-1 p-3 rounded-lg bg-white/20 text-white border border-white/30 outline-none"
+      />
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4"
-      >
+      <button className="bg-green-500 px-6 rounded-lg text-white">
+        Send
+      </button>
 
-        <input
-          type="text"
-          placeholder={`Enter ${domain} query`}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          required
-          className="p-3 rounded-lg bg-white/10 border border-white/20"
-        />
-
-        <button className="bg-green-500 hover:bg-green-600 p-3 rounded-lg">
-
-          Submit
-
-        </button>
-
-      </form>
-
-    </div>
+    </form>
 
   )
 }

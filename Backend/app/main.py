@@ -8,17 +8,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 model.Base.metadata.create_all(bind=engine)
 
-app =FastAPI()
+# from fastapi import FastAPI
+# from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
 
 origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173"
+    "http://localhost:5173",  # React app
 ]
-
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:5173"],  # your React app
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,6 +30,6 @@ app.add_middleware(
 def home():
     return {"message": "Healthcare API is running"}
 
-app.include_router(auth_Signup.router , prefix="/auth")
+app.include_router(auth_Signup.router )
 app.include_router(route_history.router)
 app.include_router(med_info.router,prefix="/Sub")

@@ -1,27 +1,105 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
 
-  const navi = useNavigate();
+  const navi = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
-      <div className=' w-full z-50 rounded-lg '>      
-        <nav className='p-3  flex flex-row justify-between align-middle items-center  backdrop-blur-sm bg-transparent'>
-        <span className='text-white p-3 text-2xl'>Ai-HealthCare</span>
-        <ul className='flex flex-row gap-x-4 '>
-          <li>HOME</li>
-          <li>ABOUT</li>
-          <li>SEARCHES</li>
-          <li>PROFILE</li>
-          <p className='px-2'>|</p>
-          
-          <li>Email</li>
-          <li onClick={()=>{navi('/ProfilePage')}}>Profile</li>
-          <li></li>
+
+    <div className="w-full fixed top-0 z-50">
+
+      <nav className="
+        flex items-center justify-between
+        px-4 md:px-8 py-4
+        backdrop-blur-md bg-white/20
+        text-white
+      ">
+
+        {/* LOGO */}
+        <span
+          className="text-xl md:text-2xl font-semibold cursor-pointer"
+          onClick={() => navi("/")}
+        >
+          Ai-HealthCare
+        </span>
+
+        {/* DESKTOP MENU */}
+        <ul className="hidden md:flex items-center gap-6 text-sm md:text-base">
+
+          <li className="hover:text-green-400 cursor-pointer transition">
+            HOME
+          </li>
+
+          <li className="hover:text-green-400 cursor-pointer transition">
+            ABOUT
+          </li>
+
+          <li className="hover:text-green-400 cursor-pointer transition">
+            SEARCHES
+          </li>
+
+          <li
+            className="hover:text-green-400 cursor-pointer transition"
+            onClick={() => navi("/ProfilePage")}
+          >
+            PROFILE
+          </li>
+
+          <span className="text-gray-400">|</span>
+
+          <li className="text-gray-300 text-sm">
+            Email
+          </li>
+
         </ul>
-        {/* <a className='text-xl font-sans p-2 text-gray-900 rounded-lg inline-flex gap-3 cursor-pointer' onClick={()=>navi("/Login")} >Login<span className='text-white'>Signup</span></a> */}
+
+        {/* MOBILE MENU BUTTON */}
+        <div
+          className="md:hidden cursor-pointer"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          ☰
+        </div>
+
       </nav>
-      </div>
+
+      {/* MOBILE DROPDOWN */}
+      {menuOpen && (
+
+        <div className="
+          md:hidden
+          flex flex-col
+          gap-4
+          p-4
+          bg-black/80 backdrop-blur-lg
+          text-white
+          animate-fadeIn
+        ">
+
+          <li className="hover:text-green-400 cursor-pointer">HOME</li>
+
+          <li className="hover:text-green-400 cursor-pointer">ABOUT</li>
+
+          <li className="hover:text-green-400 cursor-pointer">SEARCHES</li>
+
+          <li
+            className="hover:text-green-400 cursor-pointer"
+            onClick={() => navi("/ProfilePage")}
+          >
+            PROFILE
+          </li>
+
+          <span className="text-gray-400">|</span>
+
+          <li className="text-gray-300">Email</li>
+
+        </div>
+
+      )}
+
+    </div>
 
   )
 }

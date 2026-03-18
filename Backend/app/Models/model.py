@@ -29,17 +29,12 @@ class QueryRequest(BaseModel):
 # SQLAlchemy Models
 # -------------------------
 class User(Base):
-
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-
     username = Column(String, unique=True)
-
     email = Column(String, unique=True)
-
     password_hashed = Column(String)
-
     created_at = Column(DateTime, default=func.now())
 
     history = relationship("History", back_populates="user")
@@ -54,3 +49,6 @@ class History(Base):
     query = Column(String)
     result = Column(Text)
     created_at = Column(DateTime, server_default=func.now())
+
+    # ✅ FIXED
+    user = relationship("User", back_populates="history")

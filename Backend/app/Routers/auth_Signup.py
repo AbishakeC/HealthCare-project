@@ -18,9 +18,8 @@ def get_db():
         db.close()
 
 
-# ---------------- SIGNUP ----------------
-
-@router.post("/Signup")
+# ✅ SIGNUP
+@router.post("/signup")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
 
     existing_user = db.query(model.User).filter(
@@ -28,7 +27,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     ).first()
 
     if existing_user:
-        raise HTTPException(400, "Email already registered")
+        raise HTTPException(status_code=400, detail="Email already registered")
 
     new_user = model.User(
         username=user.username,
@@ -43,9 +42,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     return {"message": "User created successfully"}
 
 
-# ---------------- LOGIN ----------------
-
-@router.post("/Login")
+# ✅ LOGIN
+@router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
 
     user_db = db.query(model.User).filter(
@@ -53,14 +51,12 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     ).first()
 
     if not user_db:
-        raise HTTPException(401, "Invalid credentials")
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if not verifypassword(user.password, user_db.password_hashed):
-        raise HTTPException(401, "Invalid password")
+        raise HTTPException(status_code=401, detail="Invalid password")
 
-    token = create_access_token(
-        {"user_id": user_db.id}
-    )
+    token = create_access_token({"user_id": user_db.id})
 
     return {
         "access_token": token,
