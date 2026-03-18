@@ -32,4 +32,4 @@ def home():
 
 app.include_router(auth_Signup.router )
 app.include_router(route_history.router)
-app.include_router(med_info.router,prefix="/Sub")
+app.include_router(med_info.router,prefix="/api")

@@ -2,100 +2,71 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from ..Configs.database import get_db
-from ..Models.model import History, QueryRequest, User
-from ..Middleware.token import get_current_user
+from ..Models.model import History, QueryRequest
 
 from ..Controller.Gemin_feedback import (
     illness_info,
     analyse_symptoms,
-    generate_diet
+    generate_diet,
+    explain_drug
 )
 
 router = APIRouter()
 
+# ⚠️ TEMP USER
+FAKE_USER_ID = 1
 
-# -----------------------------
-# Illness Information
-# -----------------------------
+@router.post("/drug")
+def drug(data: QueryRequest, db: Session = Depends(get_db)):
+
+    result = explain_drug({"name": data.query})
+
+    return {"title": "Drug Info", "details": result}
+
+
 @router.post("/illness")
-def illness(
-    data: QueryRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+def illness(data: QueryRequest, db: Session = Depends(get_db)):
 
     result = illness_info(data.query)
 
-    history = History(
-        user_id=current_user.id,
+    db.add(History(
+        user_id=FAKE_USER_ID,
         domain="Illness",
         query=data.query,
         result=result
-    )
-
-    db.add(history)
+    ))
     db.commit()
 
-    return {
-        "title": data.query,
-        "description": "Illness Information",
-        "details": result
-    }
+    return {"title": data.query, "details": result}
 
 
-# -----------------------------
-# Symptom Analysis
-# -----------------------------
 @router.post("/symptoms")
-def symptoms(
-    data: QueryRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+def symptoms(data: QueryRequest, db: Session = Depends(get_db)):
 
     result = analyse_symptoms(data.query)
 
-    history = History(
-        user_id=current_user.id,
+    db.add(History(
+        user_id=FAKE_USER_ID,
         domain="Symptoms",
         query=data.query,
         result=result
-    )
-
-    db.add(history)
+    ))
     db.commit()
 
-    return {
-        "title": "Symptom Analysis",
-        "description": data.query,
-        "details": result
-    }
+    return {"title": "Symptoms", "details": result}
 
 
-# -----------------------------
-# Diet Plan
-# -----------------------------
 @router.post("/diet")
-def diet(
-    data: QueryRequest,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
+def diet(data: QueryRequest, db: Session = Depends(get_db)):
 
     result = generate_diet(data.query)
 
-    history = History(
-        user_id=current_user.id,
+    db.add(History(
+        user_id=FAKE_USER_ID,
         domain="Diet",
         query=data.query,
         result=result
-    )
-
-    db.add(history)
+    ))
     db.commit()
 
-    return {
-        "title": "Diet Plan",
-        "description": data.query,
-        "details": result
-    }
+    return {"title": "Diet Plan", "details": result}

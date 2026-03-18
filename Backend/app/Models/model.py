@@ -24,6 +24,9 @@ class QueryRequest(BaseModel):
     user_id: int
     query: str
 
+class QueryRequest(BaseModel):
+    query: str
+
 
 # -------------------------
 # SQLAlchemy Models

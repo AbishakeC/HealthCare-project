@@ -13,62 +13,68 @@ const Inbox = ({ domain, setMessages }) => {
 
   const handleSubmit = async (e) => {
 
-    e.preventDefault()
+  e.preventDefault()
 
-    if (!input.trim()) return
+  if (!input.trim()) return
 
-    const userMessage = input
+  const userMessage = input
 
-    // Add user message
+  setMessages(prev => [
+    ...prev,
+    { sender: "user", text: userMessage }
+  ])
+
+  setInput("")
+
+  try {
+
+    const payload = {
+      query: userMessage
+    }
+
+    let response = null
+
+    // ✅ normalize domain
+    const d = domain?.toLowerCase()
+
+    if (d === "drug")
+      response = await searchDrug(payload)
+
+    else if (d === "illness")
+      response = await searchIllness(payload)
+
+    else if (d === "symptoms")
+      response = await analyseSymptoms(payload)
+
+    else if (d === "diet")
+      response = await generateDiet(payload)
+
+    // ✅ safety check
+    if (!response || !response.data) {
+      throw new Error("No response from API")
+    }
+
+    const botReply =
+      response.data.details ||
+      response.data.description ||
+      "No response"
+
     setMessages(prev => [
       ...prev,
-      { sender: "user", text: userMessage }
+      { sender: "bot", text: botReply }
     ])
 
-    setInput("")
+  } catch (err) {
 
-    try {
+    console.error("API Error:", err)
 
-      const payload = {
-        user_id: 1,
-        query: userMessage
-      }
+    setMessages(prev => [
+      ...prev,
+      { sender: "bot", text: "Server error 😢" }
+    ])
+  }
 
-      let response
 
-      if (domain === "Drug")
-        response = await searchDrug(payload)
-
-      else if (domain === "Illness")
-        response = await searchIllness(payload)
-
-      else if (domain === "Symptoms")
-        response = await analyseSymptoms(payload)
-
-      else if (domain === "Diet")
-        response = await generateDiet(payload)
-
-      const botReply =
-        response.data.details ||
-        response.data.description ||
-        "No response"
-
-      // Add bot message
-      setMessages(prev => [
-        ...prev,
-        { sender: "bot", text: botReply }
-      ])
-
-    } catch (err) {
-
-      console.error("API Error:", err)
-
-      setMessages(prev => [
-        ...prev,
-        { sender: "bot", text: "Something went wrong 😢" }
-      ])
-
-    }
 
   }
 
